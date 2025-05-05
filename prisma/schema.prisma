@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+ generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlayerStatus {
+  ACTIVE
+  SUSPENDED
+  INJURED
+  INACTIVE
+  OTHER
+}
+
+enum PlayerRole {
+  CAPTAIN
+  OTHER
+}
+
+enum CardType {
+  RED
+  YELLOW
+  OTHER
+}
+
+enum Position {
+  GK
+  DF
+  MF
+  FW
+  OTHER
+}
+
+enum EventStatus {
+  ACTIVE
+  SUSPENDED
+  OTHER
+}
+
+enum RepeatType {
+  MONTHLY
+  WEEKLY
+  YEARLY
+  NONE
+}
+
+model Player {
+  id        Int           @id @default(autoincrement())
+  status    PlayerStatus
+  name      String
+  mail      String        @unique
+  password  String
+  role      PlayerRole
+  playerTeams Player_team[]
+  eventTrainingPlayers event_training_player[]
+  playerStatistics player_statistics[]
+}
+
+model Coach {
+  id        Int           @id @default(autoincrement())
+  name      String
+  mail      String        @unique
+  password  String
+  coachTeams coach_team[]
+}
+
+model Team {
+  id        Int           @id @default(autoincrement())
+  name      String
+  sport     String
+  playerTeams Player_team[]
+  coachTeams coach_team[]
+  eventTrainings event_training[]
+  eventMatches event_match[]
+}
+
+model Player_team {
+  id        Int           @id @default(autoincrement())
+  id_team   Int
+  id_player Int
+  team      Team          @relation(fields: [id_team], references: [id])
+  player    Player        @relation(fields: [id_player], references: [id])
+}
+
+model coach_team {
+  id        Int           @id @default(autoincrement())
+  id_team   Int
+  id_coach  Int
+  team      Team          @relation(fields: [id_team], references: [id])
+  coach     Coach         @relation(fields: [id_coach], references: [id])
+}
+
+model event_type {
+  id        Int           @id @default(autoincrement())
+  name      String
+  eventTrainings event_training[]
+}
+
+model event_training {
+  id        Int           @id @default(autoincrement())
+  date      DateTime
+  type      Int
+  team_id   Int
+  status    EventStatus
+  repeat    RepeatType
+  location  String
+  eventType event_type    @relation(fields: [type], references: [id])
+  team      Team          @relation(fields: [team_id], references: [id])
+  eventTrainingPlayers event_training_player[]
+}
+
+model event_training_player {
+  id        Int           @id @default(autoincrement())
+  id_event  Int
+  id_player Int
+  assist    Boolean
+  late      Boolean
+  eventTraining event_training @relation(fields: [id_event], references: [id])
+  player    Player        @relation(fields: [id_player], references: [id])
+}
+
+model event_match {
+  id        Int           @id @default(autoincrement())
+  date      DateTime
+  rival     String
+  score     String
+  location  String
+  team_id   Int
+  formation String
+  team      Team          @relation(fields: [team_id], references: [id])
+  playerStatistics player_statistics[]
+}
+
+model player_statistics {
+  id        Int           @id @default(autoincrement())
+  minutes   Int
+  score     Int
+  goals     Int
+  cards     CardType
+  position  Position
+  comments  String?
+  player_id Int
+  event_match_id Int
+  starting  Boolean
+  sub_in_minute Int?
+  sub_out_minute Int?
+  player    Player        @relation(fields: [player_id], references: [id])
+  eventMatch event_match  @relation(fields: [event_match_id], references: [id])
+}
