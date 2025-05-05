@@ -5,9 +5,10 @@ import { PlayerModule } from './player/player.module';
 import { PrismaService } from './prisma.service';
 import { TeamModule } from './team/team.module';
 import { CoachModule } from './coach/coach.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PlayerModule, CoachModule, TeamModule],
+  imports: [PlayerModule, CoachModule, TeamModule, AuthModule],
   controllers: [],
   providers: [PrismaService],
 })

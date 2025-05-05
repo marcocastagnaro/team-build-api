@@ -20,7 +20,7 @@ export class TeamService {
     return this.teamRepository.create({
       name: createTeamDto.name,
       sport: createTeamDto.sport,
-      coachId,
+      coach: coachId,
     });
   }
 

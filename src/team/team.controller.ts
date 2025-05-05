@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { AddPlayerDto } from './dto/add-player.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../auth/decorators/user.decorator';
 import { CoachGuard } from 'src/auth/guards/coach.guard';
@@ -21,12 +22,9 @@ export class TeamController {
     return this.teamService.getTeamById(parseInt(id));
   }
 
-  @Post(':id/players/:playerId')
+  @Post('add-player')
   @UseGuards(CoachGuard)
-  async addPlayerToTeam(
-    @Param('id') teamId: string,
-    @Param('playerId') playerId: string,
-  ) {
-    return this.teamService.addPlayerToTeam(parseInt(teamId), parseInt(playerId));
+  async addPlayerToTeam(@Body() addPlayerDto: AddPlayerDto) {
+    return this.teamService.addPlayerToTeam(addPlayerDto.teamId, addPlayerDto.playerId);
   }
 }

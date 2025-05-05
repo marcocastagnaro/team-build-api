@@ -1,24 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Team } from '@prisma/client';
+import { Team, Prisma } from '@prisma/client';
 
 @Injectable()
 export class TeamRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: { name: string; sport: string; coachId: number }): Promise<Team> {
+  async create(data: { name: string; sport: string, coach: number }): Promise<Team> {
     return this.prisma.team.create({
-      data: {
-        name: data.name,
-        sport: data.sport,
-        coachTeams: {
-          create: {
-            coach: {
-              connect: { id: data.coachId }
-            }
-          }
-        }
-      },
+      data,
     });
   }
 
@@ -26,30 +16,42 @@ export class TeamRepository {
     return this.prisma.team.findUnique({
       where: { id },
       include: {
-        playerTeams: {
+        players: {
           include: {
-            player: true
-          }
+            player: true,
+          },
         },
-        coachTeams: {
+        coaches: {
           include: {
-            coach: true
-          }
-        }
-      }
+            coach: true,
+          },
+        },
+      } as Prisma.TeamInclude,
     });
   }
 
-  async addPlayer(teamId: number, playerId: number) {
-    return this.prisma.player_team.create({
+  async addPlayer(teamId: number, playerId: number): Promise<void> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    const player = await this.prisma.player.findUnique({
+      where: { id: playerId },
+    });
+
+    if (!player) {
+      throw new Error('Player not found');
+    }
+
+    await this.prisma.player_team.create({
       data: {
-        team: {
-          connect: { id: teamId }
-        },
-        player: {
-          connect: { id: playerId }
-        }
-      }
+        id_player: playerId,
+        id_team: teamId,
+      },
     });
   }
 }

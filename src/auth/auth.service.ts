@@ -31,12 +31,16 @@ export class AuthService {
 
     // Create user based on role
     const user = await this.prisma[role.toLowerCase()].create({
-      data: {
+      data: role === Role.PLAYER ? {
         name,
         mail: email,
         password: hashedPassword,
         status: PlayerStatus.ACTIVE,
-        role: role === Role.PLAYER ? (playerRole || PlayerRole.OTHER) : PlayerRole.OTHER,
+        role: playerRole || PlayerRole.OTHER,
+      } : {
+        name,
+        mail: email,
+        password: hashedPassword,
       },
     });
 

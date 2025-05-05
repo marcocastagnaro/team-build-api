@@ -9,7 +9,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('coaches')
 export class CoachController {
-  constructor(private readonly CoachService: CoachService, private readonly authService: AuthService) {}
+  constructor(private readonly CoachService: CoachService) {}
 
   @Post()
   async createUser(@Body() dto: CreateCoachDto) {
@@ -20,10 +20,5 @@ export class CoachController {
   @Get()
   async getCoach() {
     return this.CoachService.getCoach();
-  }
-
-  @Post('register')
-  async register(@Body() registerCoachDto: RegisterCoachDto) {
-    return this.authService.register(registerCoachDto);
   }
 }

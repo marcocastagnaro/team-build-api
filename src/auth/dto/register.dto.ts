@@ -1,6 +1,6 @@
-import { IsEmail, IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { Role } from '../enums/role.enum';
-import { PlayerRole } from '@prisma/client';
+import { PlayerRole, PlayerStatus } from '@prisma/client';
 
 export class RegisterDto {
   @IsString()
@@ -12,6 +12,7 @@ export class RegisterDto {
   email: string;
 
   @IsString()
+  @MinLength(6)
   @IsNotEmpty()
   password: string;
 
@@ -20,5 +21,10 @@ export class RegisterDto {
   role: Role;
 
   @IsEnum(PlayerRole)
+  @IsOptional()
   playerRole?: PlayerRole;
+
+  @IsEnum(PlayerStatus)
+  @IsOptional()
+  status?: PlayerStatus;
 } 

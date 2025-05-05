@@ -9,21 +9,11 @@ import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('players')
 export class PlayerController {
-  constructor(private readonly PlayerService: PlayerService, private readonly authService: AuthService) {}
-
-  @Post('register')
-  async register(@Body() registerPlayerDto: RegisterPlayerDto) {
-    return this.authService.register(registerPlayerDto);
-  }
-
-  @Post()
-  async createUser(@Body() dto: CreatePlayerDto) {
-    console.log('Received createUser request with data:', dto);
-    return this.PlayerService.createPlayer(dto);
-  }
+  constructor(private readonly PlayerService: PlayerService) {}
 
   @Get()
   async getPlayer() {
     return this.PlayerService.getPlayer();
   }
+  
 }
