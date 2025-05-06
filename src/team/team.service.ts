@@ -20,8 +20,7 @@ export class TeamService {
     return this.teamRepository.create({
       name: createTeamDto.name,
       sport: createTeamDto.sport,
-      coach: coachId,
-    });
+    }, coachId);
   }
 
   async getTeamById(id: number) {
@@ -30,5 +29,14 @@ export class TeamService {
 
   async addPlayerToTeam(teamId: number, playerId: number) {
     return this.teamRepository.addPlayer(teamId, playerId);
+  }
+  async addCoach(teamId: number, coachId: number) {
+    return this.teamRepository.addCoach(teamId, coachId);
+  }
+  async getTeamsByCoachId(coachId: number) {
+    return this.teamRepository.getTeamsByCoachId(coachId);
+  }
+  async getTeamByPlayerId(playerId: number) {
+    return this.teamRepository.getTeamByPlayerId(playerId);
   }
 }

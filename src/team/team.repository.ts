@@ -6,9 +6,21 @@ import { Team, Prisma } from '@prisma/client';
 export class TeamRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: { name: string; sport: string, coach: number }): Promise<Team> {
+  async create(data: { name: string; sport: string }, coachId: number) {
+    // Create the team and associate the coach
     return this.prisma.team.create({
-      data,
+      data: {
+        name: data.name,
+        sport: data.sport,
+        coaches: {
+          create: {
+            id_coach: coachId
+          }
+        }
+      },
+      include: {
+        coaches: true
+      }
     });
   }
 
@@ -52,6 +64,46 @@ export class TeamRepository {
         id_player: playerId,
         id_team: teamId,
       },
+    });
+  }
+
+  async addCoach(teamId: number, coachId: number): Promise<void> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    await this.prisma.coach_team.create({
+      data: {
+        id_coach: coachId,
+        id_team: teamId,
+      },
+    });
+  }
+
+  async getTeamsByCoachId(coachId: number): Promise<Team[]> {
+    return this.prisma.team.findMany({
+      where: {
+        coaches: {
+          some: {
+            id_coach: coachId
+          }
+        }
+      },
+    });
+  }
+  async getTeamByPlayerId(playerId: number): Promise<Team | null> {
+    return this.prisma.team.findFirst({
+      where: {
+        players: {
+          some: {
+            id_player: playerId
+          }
+        }
+      }
     });
   }
 }
