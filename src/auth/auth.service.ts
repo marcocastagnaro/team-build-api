@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Role } from './enums/role.enum';
 import { PlayerStatus, PlayerRole } from '@prisma/client';
 
@@ -15,28 +15,25 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, name, role, playerRole } = registerDto;
-
-    // Check if user already exists
-    const existingUser = await this.prisma[role.toLowerCase()].findUnique({
+    const { email, password, name, role: userType, playerRole, status } = registerDto;
+  
+    const existingUser = await this.prisma[userType.toLowerCase()].findUnique({
       where: { mail: email },
     });
-
+  
     if (existingUser) {
       throw new UnauthorizedException('Email already exists');
     }
+  
+    const hashedPassword = await bcrypt.hash(password, 10);  
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user based on role
-    const user = await this.prisma[role.toLowerCase()].create({
-      data: role === Role.PLAYER ? {
+    const user = await this.prisma[userType.toLowerCase()].create({
+      data: userType === Role.PLAYER ? {
         name,
         mail: email,
         password: hashedPassword,
-        status: PlayerStatus.ACTIVE,
-        role: playerRole || PlayerRole.OTHER,
+        status: status || PlayerStatus.ACTIVE,
+        role: playerRole || PlayerRole.OTHER, // <- Ahora esto sí es PlayerRole
       } : {
         name,
         mail: email,
@@ -45,16 +42,10 @@ export class AuthService {
     });
 
     // Generate JWT token
-    const token = this.generateToken(user.id, email, role);
+    const token = this.generateToken(user.id, email, userType);
 
     return {
       access_token: token,
-      user: {
-        id: user.id,
-        email: user.mail,
-        name: user.name,
-        role,
-      },
     };
   }
 
@@ -84,12 +75,6 @@ export class AuthService {
 
     return {
       access_token: token,
-      user: {
-        id: user.id,
-        email: user.mail,
-        name: user.name,
-        role,
-      },
     };
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
 import { CoachService } from './coach.service';
 import { CreateCoachDto } from './dto/create-coach.dto';
 import { AuthService } from '../auth/auth.service';
@@ -20,5 +20,11 @@ export class CoachController {
   @Get()
   async getCoach() {
     return this.CoachService.getCoach();
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Req() req) {
+    return req.user;
   }
 }

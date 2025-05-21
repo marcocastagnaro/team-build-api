@@ -54,27 +54,27 @@ enum RepeatType {
 }
 
 model Player {
-  id        Int           @id @default(autoincrement())
-  status    PlayerStatus
-  name      String
-  mail      String        @unique
-  password  String
-  role      PlayerRole
-  teams     Player_team[]
-  trainings event_training[]
+  id         Int                 @id @default(autoincrement())
+  status     PlayerStatus
+  name       String
+  mail       String              @unique
+  password   String
+  role       PlayerRole
+  teams      Player_team[]
+  trainings  event_training[]
   statistics player_statistics[]
 }
 
 model Coach {
-  id        Int           @id @default(autoincrement())
-  name      String
-  mail      String        @unique
-  password  String
-  teams     Coach_team[]
+  id       Int          @id @default(autoincrement())
+  name     String
+  mail     String       @unique
+  password String
+  teams    Coach_team[]
 }
 
 model Team {
-  id        Int           @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   name      String
   sport     String
   players   Player_team[]
@@ -84,67 +84,67 @@ model Team {
 }
 
 model Player_team {
-  player    Player        @relation(fields: [id_player], references: [id])
+  player    Player @relation(fields: [id_player], references: [id])
   id_player Int
-  team      Team          @relation(fields: [id_team], references: [id])
+  team      Team   @relation(fields: [id_team], references: [id])
   id_team   Int
 
   @@id([id_player, id_team])
 }
 
 model Coach_team {
-  coach     Coach         @relation(fields: [id_coach], references: [id])
-  id_coach  Int
-  team      Team          @relation(fields: [id_team], references: [id])
-  id_team   Int
+  coach    Coach @relation(fields: [id_coach], references: [id])
+  id_coach Int
+  team     Team  @relation(fields: [id_team], references: [id])
+  id_team  Int
 
   @@id([id_coach, id_team])
 }
 
 model event_type {
-  id        Int           @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   name      String
   trainings event_training[]
 }
 
 model event_training {
-  id        Int           @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   date      DateTime
   type      Int
   team_id   Int
   status    EventStatus
   repeat    RepeatType
   location  String
-  eventType event_type    @relation(fields: [type], references: [id])
-  team      Team          @relation(fields: [team_id], references: [id])
+  eventType event_type  @relation(fields: [type], references: [id])
+  team      Team        @relation(fields: [team_id], references: [id])
   players   Player[]
 }
 
 model event_match {
-  id        Int           @id @default(autoincrement())
-  date      DateTime
-  rival     String
-  score     String
-  location  String
-  team_id   Int
-  formation String
-  team      Team          @relation(fields: [team_id], references: [id])
+  id         Int                 @id @default(autoincrement())
+  date       DateTime
+  rival      String
+  score      String
+  location   String
+  team_id    Int
+  formation  String
+  team       Team                @relation(fields: [team_id], references: [id])
   statistics player_statistics[]
 }
 
 model player_statistics {
-  id        Int           @id @default(autoincrement())
-  minutes   Int
-  score     Int
-  goals     Int
-  cards     CardType
-  position  Position
-  comments  String?
-  player_id Int
+  id             Int         @id @default(autoincrement())
+  minutes        Int
+  score          Int
+  goals          Int
+  cards          CardType
+  position       Position
+  comments       String?
+  player_id      Int
   event_match_id Int
-  starting  Boolean
-  sub_in_minute Int?
+  starting       Boolean
+  sub_in_minute  Int?
   sub_out_minute Int?
-  player    Player        @relation(fields: [player_id], references: [id])
-  match     event_match   @relation(fields: [event_match_id], references: [id])
+  player         Player      @relation(fields: [player_id], references: [id])
+  match          event_match @relation(fields: [event_match_id], references: [id])
 }

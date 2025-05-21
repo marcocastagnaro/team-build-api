@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { AuthService } from '../auth/auth.service';
@@ -12,8 +12,18 @@ export class PlayerController {
   constructor(private readonly PlayerService: PlayerService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getPlayer() {
     return this.PlayerService.getPlayer();
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Req() req) {
+    console.log(req.user);
+    const player = await this.PlayerService.getPlayerById(req.user.id);
+    console.log(player);
+    return player;
   }
   
 }

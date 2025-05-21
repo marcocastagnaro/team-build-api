@@ -1,39 +1,23 @@
-# ---- Step 1: Builder (Installs dependencies & builds the app) ----
-    FROM node:20-alpine AS builder
+FROM node:20-slim
 
-    WORKDIR /app
-    
-    # Copy package.json and package-lock.json to leverage Docker's cache
-    COPY package*.json ./
-    RUN npm install  # Install all dependencies, including dev dependencies
-    
-    # Install Nest CLI explicitly
-    RUN npm install -g @nestjs/cli
-    
-    # Copy the entire application, including Prisma files
-    COPY . .
-    
-    # Generate Prisma Client
-    RUN npx prisma generate
-    
-    # Build the NestJS application
-    RUN npm run build
-    
-    # ---- Step 2: Runtime (Minimal image for running the app) ----
-    FROM node:20-alpine AS runtime
-    
-    WORKDIR /app
-    
-    # Copy only necessary files from builder
-    COPY --from=builder /app/dist ./dist
-    COPY --from=builder /app/node_modules ./node_modules
-    COPY --from=builder /app/package.json ./
-    # ✅ Copy Prisma schema and migrations
-    COPY --from=builder /app/prisma ./prisma
-    
-    # Expose the application's port
-    EXPOSE 8080
-    
-    # Ensure database is ready before applying migrations
-    CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
-    
+WORKDIR /app
+
+# Copiar package.json y package-lock.json primero para aprovechar el cache de Docker
+COPY package*.json ./
+
+# Instalar solo las dependencias necesarias
+RUN npm install --omit=dev
+
+# Copiar el resto del código fuente
+COPY . .
+
+# Generar Prisma Client y construir el proyecto
+RUN apt-get update -y && apt-get install -y openssl
+
+RUN npx prisma generate
+
+RUN npm run build
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]

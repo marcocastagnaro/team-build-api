@@ -13,4 +13,6 @@ export class PlayerService {
   async getPlayerById(id: number) {
     return this.playerRepository.findById(id);
   }
+
 }
+
