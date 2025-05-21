@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
 import { PlayerService } from './player.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
 import { AuthService } from '../auth/auth.service';
 import { RegisterPlayerDto } from '../auth/dto/register-player.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

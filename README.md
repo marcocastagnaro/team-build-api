@@ -2,20 +2,6 @@
 
 A NestJS-based API for managing sports teams, players, and coaches.
 
-## Features
-
-- User authentication (Players and Coaches)
-- Team management
-- Player management
-- Coach management
-- Role-based access control
-
-## Prerequisites
-
-- Node.js (v16 or later)
-- PostgreSQL
-- npm or yarn
-
 ## Installation
 
 1. Clone the repository:
@@ -50,39 +36,17 @@ npx prisma migrate dev
 npm run start:dev
 ```
 
-## API Endpoints
+Or run it with Docker:
 
-### Authentication
+```bash
+docker-compose up --build
+```
 
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login user
+## Swagger Documentation
+The API documentation is available at `http://localhost:8080/api`.
 
-### Players
+## Connect to DB on DATAGRIP
+1. Open DataGrip and create a new connection.
+2. Select PostgreSQL as the database type.
+3. Enter the following connection url: jdbc:postgresql://localhost:5432/nestdb with password postgres
 
-- `POST /players/register` - Register a new player
-- `GET /players` - Get all players
-- `GET /players/:id` - Get player by ID
-
-### Coaches
-
-- `POST /coaches/register` - Register a new coach
-- `GET /coaches` - Get all coaches
-- `GET /coaches/:id` - Get coach by ID
-
-### Teams
-
-- `POST /teams` - Create a new team (Coach only)
-- `GET /teams/:id` - Get team by ID
-- `POST /teams/:id/players/:playerId` - Add player to team (Coach only)
-
-## Technologies Used
-
-- NestJS
-- Prisma
-- PostgreSQL
-- JWT Authentication
-- TypeScript
-
-## License
-
-MIT
