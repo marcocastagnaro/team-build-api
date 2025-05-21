@@ -6,19 +6,17 @@ import { RegisterPlayerDto } from '../auth/dto/register-player.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Role } from '../auth/enums/role.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Players')
 @Controller('players')
 export class PlayerController {
   constructor(private readonly PlayerService: PlayerService) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async getPlayer() {
-    return this.PlayerService.getPlayer();
-  }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get Player' })
   async getMe(@Req() req) {
     console.log(req.user);
     const player = await this.PlayerService.getPlayerById(req.user.id);
