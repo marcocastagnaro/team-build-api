@@ -1,22 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
-import { CreateCoachDto } from './dto/create-coach.dto';
+import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class CoachRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createCoach(data: CreateCoachDto) {
-    const payload = {
-      ...data,
-
-    }
-    return this.prisma.coach.create({ data: payload });
-  }
-
   async getCoach() {
     return this.prisma.coach.findMany();
   }
-  async findCoachById(id: number) {
+  async findCoachById(id: string) {
     return this.prisma.coach.findUnique({ where: { id } });
   }
 

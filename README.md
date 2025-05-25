@@ -50,3 +50,9 @@ The API documentation is available at `http://localhost:8080/api`.
 2. Select PostgreSQL as the database type.
 3. Enter the following connection url: jdbc:postgresql://localhost:5432/nestdb with password postgres
 
+
+
+## Run Formatter
+```bash
+npm run format
+```

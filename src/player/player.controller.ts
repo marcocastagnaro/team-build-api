@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  ValidationPipe,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { AuthService } from '../auth/auth.service';
 import { RegisterPlayerDto } from '../auth/dto/register-player.dto';
@@ -12,7 +21,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class PlayerController {
   constructor(private readonly PlayerService: PlayerService) {}
 
-
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get Player' })
@@ -22,5 +30,4 @@ export class PlayerController {
     console.log(player);
     return player;
   }
-  
 }

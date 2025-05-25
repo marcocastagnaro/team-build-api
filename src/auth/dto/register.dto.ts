@@ -1,4 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { Role } from '../enums/role.enum';
 import { PlayerRole, PlayerStatus } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
@@ -33,4 +40,4 @@ export class RegisterDto {
   @IsOptional()
   @ApiProperty({ description: 'The status of the player' })
   status?: PlayerStatus;
-} 
+}

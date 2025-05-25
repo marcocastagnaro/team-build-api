@@ -5,7 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 import { Role } from './enums/role.enum';
-import { PlayerStatus, PlayerRole } from '@prisma/client';
+import { PlayerRole } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -15,46 +15,60 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, name, role: userType, playerRole, status } = registerDto;
-  
-    const existingUser = await this.prisma[userType.toLowerCase()].findUnique({
+    const { email, password, name, role, playerRole } = registerDto;
+
+    // Check if user exists in either table
+    const existingCoach = await this.prisma.coach.findUnique({
       where: { mail: email },
     });
-  
-    if (existingUser) {
-      throw new UnauthorizedException('Email already exists');
-    }
-  
-    const hashedPassword = await bcrypt.hash(password, 10);  
-
-    const user = await this.prisma[userType.toLowerCase()].create({
-      data: userType === Role.PLAYER ? {
-        name,
-        mail: email,
-        password: hashedPassword,
-        status: status || PlayerStatus.ACTIVE,
-        role: playerRole || PlayerRole.OTHER, // <- Ahora esto sí es PlayerRole
-      } : {
-        name,
-        mail: email,
-        password: hashedPassword,
-      },
+    const existingPlayer = await this.prisma.player.findUnique({
+      where: { mail: email },
     });
 
-    // Generate JWT token
-    const token = this.generateToken(user.id, email, userType);
+    if (existingCoach || existingPlayer) {
+      throw new UnauthorizedException('Email already exists');
+    }
 
-    return {
-      access_token: token,
-    };
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    if (role === Role.PLAYER) {
+      const player = await this.prisma.player.create({
+        data: {
+          name,
+          mail: email,
+          password: hashedPassword,
+          role: playerRole || PlayerRole.OTHER,
+        },
+      });
+      return {
+        access_token: this.generateToken(player.id, email, Role.PLAYER),
+        id: player.id,
+      };
+    } else {
+      const coach = await this.prisma.coach.create({
+        data: {
+          name,
+          mail: email,
+          password: hashedPassword,
+        },
+      });
+      return {
+        access_token: this.generateToken(coach.id, email, Role.COACH),
+        id: coach.id,
+      };
+    }
   }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
     // Try to find user in both coach and player tables
-    const coach = await this.prisma.coach.findUnique({ where: { mail: email } });
-    const player = await this.prisma.player.findUnique({ where: { mail: email } });
+    const coach = await this.prisma.coach.findUnique({
+      where: { mail: email },
+    });
+    const player = await this.prisma.player.findUnique({
+      where: { mail: email },
+    });
     const user = coach || player;
 
     if (!user) {
@@ -75,14 +89,15 @@ export class AuthService {
 
     return {
       access_token: token,
+      id: user.id,
     };
   }
 
-  private generateToken(userId: number, email: string, role: Role) {
+  private generateToken(userId: string, email: string, role: Role) {
     return this.jwtService.sign({
       sub: userId,
       email,
       role,
     });
   }
-} 
+}

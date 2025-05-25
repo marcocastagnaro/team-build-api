@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  ValidationPipe,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { CoachService } from './coach.service';
 import { AuthService } from '../auth/auth.service';
 import { RegisterCoachDto } from '../auth/dto/register-coach.dto';

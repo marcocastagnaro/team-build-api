@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PlayerRepository } from './player.repository';
-import { CreatePlayerDto } from './dto/create-player.dto';
 
 @Injectable()
 export class PlayerService {
@@ -10,9 +9,7 @@ export class PlayerService {
     return this.playerRepository.findAll();
   }
 
-  async getPlayerById(id: number) {
+  async getPlayerById(id: string) {
     return this.playerRepository.findById(id);
   }
-
 }
-

@@ -1,14 +1,14 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class AddCoachDto {
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty({ description: 'The id of the team' })
-  teamId: number;
+  teamId: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty({ description: 'The id of the coach' })
-  coachId: number;
+  coachId: string;
 }

@@ -1,13 +1,18 @@
-import { IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PlayerStatus } from '@prisma/client';
+
 export class AddPlayerDto {
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: 'The id of the team' })
-  teamId: number;
+  teamId: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({ description: 'The id of the player' })
-  playerId: number;
-} 
+  playerId: string;
+
+  @IsNotEmpty()
+  playerStatus: PlayerStatus;
+}

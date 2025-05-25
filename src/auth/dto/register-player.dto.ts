@@ -6,4 +6,4 @@ export class RegisterPlayerDto extends RegisterDto {
   @IsEnum(Role)
   @ApiProperty({ description: 'The role of the user' })
   role: Role = Role.PLAYER;
-} 
+}
